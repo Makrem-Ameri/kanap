@@ -1,3 +1,4 @@
+
 const cart = []
 
 retrieveItemsFromCache()
@@ -166,10 +167,9 @@ function makeImageDiv(item) {
 function submitForm(e) {
   e.preventDefault()
   if (cart.length === 0) {
-    alert("choisir un article d'abord!")
+    alert("vôtre panier est vide")
     return
   }
-
 
   if (isEmailInvalid()) return
   if (isLastNameInvalid()) return
@@ -188,12 +188,12 @@ function submitForm(e) {
     .then((res) => res.json())
     .then((data) => {
       const orderId = data.orderId
-      window.location.href = "confirmation.html" 
-      localeStorage.clear();
+      window.location.href = "confirmation.html" + "?orderId=" + orderId
+      localStorage.clear();
     })
     .catch((err) => console.error(err))
 }
-
+//fonction de test la validation email
 function isEmailInvalid() {
   const email = document.querySelector("#email").value
   const regex = /^[A-Za-z0-9+_.-]+@(.+)$/
@@ -203,6 +203,7 @@ function isEmailInvalid() {
   }
   return false
 }
+//fonction de test la validation de first name
 function isFirstNameInvalid(){
   const firstName=document.querySelector("#firstName").value
   const regex= /^[A-Z-a-z\s]{3,25}$/
@@ -212,6 +213,7 @@ function isFirstNameInvalid(){
   }
   return false
 }
+//fonction de test la validation de last name
 function isLastNameInvalid(){
   const lastName=document.querySelector("#lastName").value
   const regex= /^[A-Z-a-z\s]{3,25}$/
@@ -221,6 +223,7 @@ function isLastNameInvalid(){
   }
   return false
 }
+//fonction de test la validation de l'adresse
 function isAddressInvalid(){
   const address=document.querySelector("#address").value
   const regex=/^[0-9]{1,5}[a-z-A-Z\s]{2,8}[a-z-A-Z -.,]{3,40}$/
@@ -230,6 +233,7 @@ function isAddressInvalid(){
   }
   return false
 }
+//fonction de test la validation de la ville
 function isCityInvalid(){
   const city=document.querySelector("#city").value
   const regex= /^[A-Z-a-z\s]{3,25}$/
