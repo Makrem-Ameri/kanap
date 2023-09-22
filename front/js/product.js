@@ -23,7 +23,7 @@ function chooseProduct(product) {
   makeDescription(description)
   makeColors(colors)
 }
-
+//fonction de créer une image
 function makeImage(imageUrl, altTxt) {
   const image = document.createElement("img")
   image.src = imageUrl
@@ -31,20 +31,22 @@ function makeImage(imageUrl, altTxt) {
   const parent = document.querySelector(".item__img")
   if (parent != null) parent.appendChild(image)
 }
-
+//fonction de créer un titre
 function makeTitle(name) {
   const h1 = document.querySelector("#title")
   if (h1 != null) h1.textContent = name
 }
-
+//fonction de créer une price
 function makePrice(price) {
   const span = document.querySelector("#price")
   if (span != null) span.textContent = price
 }
+//fonction de créer une description
 function makeDescription(description) {
   const p = document.querySelector("#description")
   if (p != null) p.textContent = description
 }
+//fonction de créer une couleur
 function makeColors(colors) {
   const select = document.querySelector("#colors")
   if (select != null) {
@@ -68,7 +70,7 @@ function handleClick() {
   chooseOrder(color, quantity)
   panier()
 }
-
+//fonction de choisir commande
 function chooseOrder(color, quantity) {
   const key = `${id}-${color}`
   const data = {
@@ -82,6 +84,7 @@ function chooseOrder(color, quantity) {
   }
   localStorage.setItem(key, JSON.stringify(data))
 }
+//fonction de verifier la validation du commande
 function isOrderInvalid(color, quantity) {
   if (color == null || color === "" || quantity == null || quantity == 0 ||quantity<0 || quantity>100) {
     alert("selectionner une coleur et une quantité entre 1 et 100")
