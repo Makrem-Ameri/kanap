@@ -188,7 +188,7 @@ function submitForm(e) {
     .then((res) => res.json())
     .then((data) => {
       const orderId = data.orderId
-      window.location.href = "/html/confirmation.html" + "?orderId=" + orderId
+      window.location.href = "confirmation.html" 
     })
     .catch((err) => console.error(err))
 }
