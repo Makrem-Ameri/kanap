@@ -189,6 +189,7 @@ function submitForm(e) {
     .then((data) => {
       const orderId = data.orderId
       window.location.href = "confirmation.html" 
+      localeStorage.clear();
     })
     .catch((err) => console.error(err))
 }
