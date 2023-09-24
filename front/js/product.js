@@ -104,7 +104,7 @@ if(messageLocalStorageUpdating){
 
 }
 // si la couleur n'est pas sélectionnée ou la quantité non comprise entre 1 et 100 alors on affiche un message d'alerte
-  else { alert(`La couleur n'est pas sélectionnée et/ou la quantité n'est pas comprise entre 1 et 100 `);
+  else { alert(`sélectionner une couleur et une quantité de nombre entier entre 1 et 100`);
             }
         });
     })
