@@ -1,96 +1,116 @@
 
-const queryString = window.location.search
-const urlParams = new URLSearchParams(queryString)
-const id = urlParams.get("id")
-if (id != null) {
-  let itemPrice = 0
-  let imgUrl, altText, articleName
+const productId = new URLSearchParams(window.location.search).get("id");
+console.log(productId);
+
+if (productId !== null){
+fetch(`http://localhost:3000/api/products/${productId}`)
+  .then(response => response.json())
+  .then(selectProduct => {
+    console.log(selectProduct);
+    document.title = selectProduct.name;
+    const img = document.createElement("img");
+img.src = selectProduct.imageUrl;
+img.alt = selectProduct.altTxt;
+document.getElementsByClassName("item__img")[0].appendChild(img);
+document.getElementById("title").innerText = selectProduct.name;
+document.getElementById("price").innerText = selectProduct.price + " ";
+ document.getElementById("description").innerText = selectProduct.description;
+
+ // Boucle forEach pour ajouter toutes les couleurs en option du select en HTML
+  selectProduct.colors.forEach(function (color) {
+  const option = document.createElement("option");
+  const select = document.getElementById("colors");
+    
+// Récupération des données de l'API
+option.value = color;
+   option.innerText = color;
+    
+  // Ajout de l'option à la sélection (select en HTML)
+   select.appendChild(option);
+ })
+
+    //bouton Ajouter au panier puis.....
+    const selectBoutonPanier = document.querySelector("#addToCart");
+  // .....Ecoute du bouton Panier pour envoyer les choix de l'utilisateur
+ selectBoutonPanier.addEventListener("click", (event)=>{
+ event.preventDefault();
+ // Sélection de l'id pour le choix de la couleur et....
+ const colorId = document.querySelector("#colors");
+// insertion de la couleur choisie par l'utilisateur dans une variable
+   choiceColor = colorId.value;
+  // Sélection de l'id pour le choix de la quantité et insertion de la quantité choisie par l'utilisateur dans une variable
+ const quantity = document.querySelector("#quantity");
+ choiceQuantity = Number(quantity.value);
+console.log(choiceQuantity);
+
+ if (choiceColor !== "" && choiceQuantity > 0 && choiceQuantity <= 100 && Number.isInteger(choiceQuantity)) {
+ let optionsProduct = {
+  idProduct: selectProduct._id ,
+ colorProduct: choiceColor ,
+ quantityProduct: choiceQuantity
+ }
+  console.log(optionsProduct);
+              
+let messageLocalStorageUpdating = false;
+//Fonction ajouter dans le localStorage un produit sélectionné par l'utilisatueur, avec ses options (id, couleur, quantité)
+const addProductLocalStorage = () => {
+                    
+// Si le produit et la couleur choisis existent déjà dans le localStorage alors on incrémente uniquement la quantité
+let findProduct = produitEnregistreDansLocalStorage.find((x) => {return x.idProduct === optionsProduct.idProduct && x.colorProduct === optionsProduct.colorProduct});
+if(findProduct){
+const total = Number(findProduct.quantityProduct) + Number(optionsProduct.quantityProduct);
+if(total <= 100){
+ // On met la variable message sur false pour pouvoir afficher un message plus approprié
+ messageLocalStorageUpdating = false;
+ findProduct.quantityProduct = Number(findProduct.quantityProduct) + Number(optionsProduct.quantityProduct);
+   alert(`La quantité du produit ${selectProduct.name} de couleur ${choiceColor} a bien été mise à jour.`);
+ }
+ else{
+// On met la variable message sur false pour pouvoir afficher un message plus approprié
+ messageLocalStorageUpdating = false;
+ alert("La quantité d'un article (même référence et même couleur) ne peut pas dépasser 100. Merci de rectifier la quantité choisie.");
+}
+ }
+ else{
+ // On met la variable message sur true car c'est bien ce message là qu'on veut afficher
+ messageLocalStorageUpdating = true;
+ // on met les options du produit choisi dans une variable "produitEnregistreDansLocalStorage"
+ produitEnregistreDansLocalStorage.push(optionsProduct);
+}
+                    
+ // Transformation en format JSON et envoi des infos dans la clé "produit" du localStorage
+ localStorage.setItem("produit", JSON.stringify(produitEnregistreDansLocalStorage))
+}
+  let produitEnregistreDansLocalStorage = JSON.parse(localStorage.getItem("produit"));
+  if(produitEnregistreDansLocalStorage){
+  addProductLocalStorage();
+  console.log(produitEnregistreDansLocalStorage);
+                }
+  // si le localStorage est vide
+  else{
+  produitEnregistreDansLocalStorage = [];
+ addProductLocalStorage();
+console.log(produitEnregistreDansLocalStorage);
+  // On met la variable message sur false pour pouvoir afficher un message plus approprié
+  messageLocalStorageUpdating = false;
+// alert(`Félicitations !! Vous venez d'ajouter votre premier produit dans le panier ! `);
+ window.location.href="cart.html"
+  }
+// si la variable messageLocalStorageUpdating est vrai alors on affiche ce message :
+if(messageLocalStorageUpdating){
+ //alert(`Le produit ${selectProduct.name} de couleur ${choiceColor} a bien été ajouté au panier.`);
+ window.location.href="cart.html"
 }
 
-fetch(`http://localhost:3000/api/products/${id}`)
-  .then((response) => response.json())
-  .then((res) => chooseProduct(res))
-
-function chooseProduct(product) {
-  const { altTxt, colors, description, imageUrl, name, price } = product
-  itemPrice = price
-  imgUrl = imageUrl
-  altText = altTxt
-  articleName = name
-  makeImage(imageUrl, altTxt)
-  makeTitle(name)
-  makePrice(price)
-  makeDescription(description)
-  makeColors(colors)
 }
-//fonction de créer une image
-function makeImage(imageUrl, altTxt) {
-  const image = document.createElement("img")
-  image.src = imageUrl
-  image.alt = altTxt
-  const parent = document.querySelector(".item__img")
-  if (parent != null) parent.appendChild(image)
-}
-//fonction de créer un titre
-function makeTitle(name) {
-  const h1 = document.querySelector("#title")
-  if (h1 != null) h1.textContent = name
-}
-//fonction de créer une price
-function makePrice(price) {
-  const span = document.querySelector("#price")
-  if (span != null) span.textContent = price
-}
-//fonction de créer une description
-function makeDescription(description) {
-  const p = document.querySelector("#description")
-  if (p != null) p.textContent = description
-}
-//fonction de créer une couleur
-function makeColors(colors) {
-  const select = document.querySelector("#colors")
-  if (select != null) {
-    colors.forEach((color) => {
-      const option = document.createElement("option")
-      option.value = color
-      option.textContent = color
-      select.appendChild(option)
+// si la couleur n'est pas sélectionnée ou la quantité non comprise entre 1 et 100 alors on affiche un message d'alerte
+  else { alert(`La couleur n'est pas sélectionnée et/ou la quantité n'est pas comprise entre 1 et 100 `);
+            }
+        });
     })
-  }
-}
-
-const button = document.querySelector("#addToCart")
-button.addEventListener("click", handleClick)
-
-function handleClick() {
-  const color = document.querySelector("#colors").value
-  const quantity = document.querySelector("#quantity").value
-
-  if (isOrderInvalid(color, quantity)) return
-  chooseOrder(color, quantity)
-  panier()
-}
-//fonction de choisir commande
-function chooseOrder(color, quantity) {
-  const key = `${id}-${color}`
-  const data = {
-    id: id,
-    color: color,
-    quantity: Number(quantity),
-    price: itemPrice,
-    imageUrl: imgUrl,
-    altTxt: altText,
-    name: articleName
-  }
-  localStorage.setItem(key, JSON.stringify(data))
-}
-//fonction de verifier la validation du commande
-function isOrderInvalid(color, quantity) {
-  if (color == null || color === "" || quantity == null || quantity == 0 ||quantity<0 || quantity>100) {
-    alert("selectionner une coleur et une quantité entre 1 et 100")
-    return true
-  }
-}
-function panier() {
-  window.location.href = "cart.html"
+    .catch((err) => {
+        console.log("Erreur Fetch product.js : l'id du produit est incorrect.", err);
+        alert(`Le produit sélectionné n'a pas été trouvé !`);
+        window.location.href = "index.html";
+    })
 }
